@@ -2,12 +2,13 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { NavBar } from "@/components/nav-bar"
-import { CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle, XCircle, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { NameCard } from "@/components/ui/nameCard"
 
 // Mock data - in a real app this would come from your database
 const mockFlashcards = [
@@ -32,39 +33,57 @@ export default function PracticePage() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [userAnswer, setUserAnswer] = useState("")
   const [feedback, setFeedback] = useState<null | { correct: boolean; message: string }>(null)
-  const [showDefinition, setShowDefinition] = useState(false)
+  const [showingReview, setShowingReview] = useState(false)
   const [completed, setCompleted] = useState(false)
-  const [textareaHeight, setTextareaHeight] = useState(80)
 
   const currentCard = mockFlashcards[currentCardIndex]
 
-  useEffect(() => {
-    // Reset textarea height when moving to a new card
-    setTextareaHeight(80)
-  }, [currentCardIndex])
-
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserAnswer(e.target.value)
-    // Adjust height based on content
-    const newHeight = Math.max(80, Math.min(200, e.target.value.split("\n").length * 24 + 40))
-    setTextareaHeight(newHeight)
   }
 
   const checkAnswer = () => {
     // In a real app, this would use AI to compare the answer
     const isCorrect =
-      userAnswer.toLowerCase().includes("energía") ||
-      userAnswer.toLowerCase().includes("luz") ||
-      userAnswer.toLowerCase().includes("plantas")
+      currentCardIndex === 0
+        ? userAnswer.toLowerCase().includes("energía") ||
+          userAnswer.toLowerCase().includes("luz") ||
+          userAnswer.toLowerCase().includes("plantas")
+        : currentCardIndex === 1
+          ? userAnswer.toLowerCase().includes("respiración") ||
+            userAnswer.toLowerCase().includes("atp") ||
+            userAnswer.toLowerCase().includes("celular")
+          : userAnswer.toLowerCase().includes("genética") ||
+            userAnswer.toLowerCase().includes("información") ||
+            userAnswer.toLowerCase().includes("adn")
+
+    const feedbackMessages = [
+      {
+        correct:
+          "¡Excelente! Tu respuesta contiene los conceptos clave sobre la fotosíntesis. Has identificado correctamente que se trata de un proceso donde las plantas utilizan la luz solar para generar energía química.",
+        incorrect:
+          "Tu respuesta no incluye algunos conceptos clave sobre la fotosíntesis. Recuerda que este proceso involucra la conversión de luz solar en energía química por parte de las plantas.",
+      },
+      {
+        correct:
+          "¡Muy bien! Has identificado correctamente que la mitocondria está relacionada con la respiración celular y la producción de ATP, que es la molécula energética fundamental para la célula.",
+        incorrect:
+          "Tu respuesta no menciona aspectos clave de la mitocondria. Recuerda que este orgánulo es fundamental para la respiración celular y la producción de ATP, que es la energía que utiliza la célula.",
+      },
+      {
+        correct:
+          "¡Correcto! Has identificado que el ADN contiene la información genética de los organismos, lo que es esencial para entender cómo se transmiten las características hereditarias.",
+        incorrect:
+          "Tu respuesta no menciona la función principal del ADN. Recuerda que el ADN es la molécula que contiene toda la información genética que determina las características de un organismo.",
+      },
+    ]
 
     setFeedback({
       correct: isCorrect,
-      message: isCorrect
-        ? "¡Correcto! Tu respuesta contiene los conceptos clave."
-        : "No es del todo correcto. Revisa la definición correcta.",
+      message: isCorrect ? feedbackMessages[currentCardIndex].correct : feedbackMessages[currentCardIndex].incorrect,
     })
 
-    setShowDefinition(true)
+    setShowingReview(true)
   }
 
   const nextCard = () => {
@@ -72,7 +91,7 @@ export default function PracticePage() {
       setCurrentCardIndex(currentCardIndex + 1)
       setUserAnswer("")
       setFeedback(null)
-      setShowDefinition(false)
+      setShowingReview(false)
     } else {
       setCompleted(true)
     }
@@ -80,53 +99,23 @@ export default function PracticePage() {
 
   if (completed) {
     return (
-      <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-white to-gray-50">
+      <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-blue-50 to-slate-50">
         <NavBar compact />
-
-        {/* Background wave patterns - same as other pages */}
-        <div className="absolute inset-0 z-0 overflow-hidden">
-          <div className="absolute -left-20 top-0 h-full w-1/2 opacity-20">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute left-0 top-0 h-full w-full transform rounded-br-[70%] rounded-tr-[30%]"
-                style={{
-                  backgroundColor: `#${i % 2 === 0 ? "d7d7d7" : "c0c0c0"}`,
-                  left: `${i * 40}px`,
-                  opacity: 0.7 - i * 0.1,
-                }}
-              />
-            ))}
-          </div>
-          <div className="absolute right-0 top-0 h-full w-1/2 opacity-20">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute right-0 top-0 h-full w-full transform rounded-bl-[70%] rounded-tl-[30%]"
-                style={{
-                  backgroundColor: `#${i % 2 === 0 ? "d7d7d7" : "c0c0c0"}`,
-                  right: `${i * 40}px`,
-                  opacity: 0.7 - i * 0.1,
-                }}
-              />
-            ))}
-          </div>
-        </div>
 
         {/* Content */}
         <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pt-16">
-          <div className="w-full max-w-xl rounded-xl bg-white p-8 shadow-lg">
+          <div className="w-full max-w-xl rounded-xl bg-white p-8 shadow-md border border-slate-100">
             <div className="flex flex-col items-center text-center">
               <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-                <CheckCircle2 className="h-10 w-10 text-green-600" />
+                <CheckCircle className="h-10 w-10 text-green-500" />
               </div>
-              <h2 className="mb-3 text-2xl font-bold text-gray-800">¡Has completado la práctica!</h2>
-              <p className="mb-8 text-gray-600">
+              <h2 className="mb-3 text-2xl font-bold text-slate-800">¡Has completado la práctica!</h2>
+              <p className="mb-8 text-slate-500">
                 Has repasado todos los conceptos. ¿Quieres crear nuevas flashcards o practicar de nuevo?
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/">
-                  <Button className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-3 font-medium text-white hover:from-blue-600 hover:to-indigo-700">
+                  <Button className="rounded-full bg-blue-500 hover:bg-blue-600 px-6 py-3 font-medium text-white">
                     Crear nuevas flashcards
                   </Button>
                 </Link>
@@ -135,10 +124,10 @@ export default function PracticePage() {
                     setCurrentCardIndex(0)
                     setUserAnswer("")
                     setFeedback(null)
-                    setShowDefinition(false)
+                    setShowingReview(false)
                     setCompleted(false)
                   }}
-                  className="rounded-full border-2 border-blue-500 bg-transparent px-6 py-3 font-medium text-blue-600 hover:bg-blue-50"
+                  className="rounded-full border-2 border-blue-500 bg-transparent px-6 py-3 font-medium text-blue-500 hover:bg-blue-50"
                 >
                   Practicar de nuevo
                 </Button>
@@ -150,114 +139,97 @@ export default function PracticePage() {
     )
   }
 
-  return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-white to-gray-50">
-      <NavBar compact />
+  if (showingReview) {
+    return (
+      <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-blue-50 to-slate-50">
+        <NavBar compact />
 
-      {/* Background wave patterns - same as other pages */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-20 top-0 h-full w-1/2 opacity-20">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute left-0 top-0 h-full w-full transform rounded-br-[70%] rounded-tr-[30%]"
-              style={{
-                backgroundColor: `#${i % 2 === 0 ? "d7d7d7" : "c0c0c0"}`,
-                left: `${i * 40}px`,
-                opacity: 0.7 - i * 0.1,
-              }}
-            />
-          ))}
+        {/* Content */}
+        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pt-16">
+          <div className="w-full max-w-xl">
+            {/* User Answer */}
+            <div className="mb-6 rounded-xl bg-white p-6 shadow-md border border-slate-100">
+              <h2 className="mb-2 text-lg font-medium text-slate-500">Mi respuesta:</h2>
+              <p className="rounded-lg bg-slate-50 p-4 text-slate-700">{userAnswer}</p>
+            </div>
+
+            {/* Feedback Icon */}
+            <div className="mb-6 flex flex-col items-center justify-center py-8">
+              <div
+                className={`flex h-24 w-24 items-center justify-center rounded-full ${feedback?.correct ? "bg-green-100" : "bg-red-100"}`}
+              >
+                {feedback?.correct ? (
+                  <CheckCircle className="h-12 w-12 text-green-500" />
+                ) : (
+                  <XCircle className="h-12 w-12 text-red-500" />
+                )}
+              </div>
+            </div>
+
+            {/* Feedback Text */}
+            <div className="mb-6 rounded-xl bg-white p-6 shadow-md border border-slate-100">
+              <h2 className="mb-4 text-lg font-medium text-slate-700">
+                {feedback?.correct ? "¡Correcto!" : "Necesitas repasar"}
+              </h2>
+              <p className="text-slate-600 mb-4">{feedback?.message}</p>
+
+              <div className="mt-4 pt-4 border-t border-slate-100">
+                <h3 className="mb-2 text-sm font-medium text-slate-500">Definición correcta:</h3>
+                <p className="rounded-lg bg-blue-50 p-3 text-slate-700">{currentCard.definition}</p>
+              </div>
+            </div>
+
+            {/* Next Button */}
+            <div className="flex justify-end">
+              <Button
+                onClick={nextCard}
+                className="rounded-full bg-blue-500 hover:bg-blue-600 px-6 py-2 font-medium text-white flex items-center gap-2"
+              >
+                {currentCardIndex < mockFlashcards.length - 1 ? "Siguiente flashcard" : "Finalizar práctica"}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
-        <div className="absolute right-0 top-0 h-full w-1/2 opacity-20">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute right-0 top-0 h-full w-full transform rounded-bl-[70%] rounded-tl-[30%]"
-              style={{
-                backgroundColor: `#${i % 2 === 0 ? "d7d7d7" : "c0c0c0"}`,
-                right: `${i * 40}px`,
-                opacity: 0.7 - i * 0.1,
-              }}
-            />
-          ))}
-        </div>
-      </div>
+      </main>
+    )
+  }
+
+  return (
+    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-blue-50 to-slate-50">
+      <NavBar compact />
 
       {/* Content */}
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pt-16">
         <div className="mb-4 text-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-500">
             Flashcard {currentCardIndex + 1} de {mockFlashcards.length}
           </p>
         </div>
 
         <div className="w-full max-w-xl">
-          {/* Concept Card */}
-          <div className="mb-6 rounded-xl bg-white p-6 shadow-lg">
-            <h2 className="mb-2 text-lg font-medium text-gray-600">Concepto:</h2>
-            <div className="rounded-lg bg-blue-50 p-4">
-              <h3 className="text-2xl font-bold text-gray-900">{currentCard.concept}</h3>
-            </div>
+          <div className="w-full h-48 flex justify-center items-center mb-6">
+            <NameCard concept={currentCard.concept} />
           </div>
 
+
           {/* Answer Section */}
-          <div className="rounded-xl bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-lg font-medium text-gray-600">Tu definición:</h2>
+          <div className="rounded-xl bg-white p-6 shadow-md border border-slate-100">
+            <h2 className="mb-4 text-lg font-medium text-slate-500">Tu definición:</h2>
 
-            {!showDefinition ? (
-              <>
-                <Textarea
-                  value={userAnswer}
-                  onChange={handleTextareaChange}
-                  placeholder="Escribe tu definición aquí..."
-                  className="mb-4 resize-none rounded-lg border-gray-200 bg-gray-50 text-gray-800 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-300"
-                  style={{ height: `${textareaHeight}px` }}
-                />
-                <Button
-                  onClick={checkAnswer}
-                  disabled={!userAnswer.trim()}
-                  className="w-full rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 py-3 font-medium text-white hover:from-blue-600 hover:to-indigo-700"
-                >
-                  Verificar respuesta
-                </Button>
-              </>
-            ) : (
-              <>
-                <div
-                  className={`mb-6 rounded-lg p-4 ${feedback?.correct ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}
-                >
-                  <div className="flex items-start gap-3">
-                    {feedback?.correct ? (
-                      <CheckCircle2 className="mt-1 h-5 w-5 flex-shrink-0 text-green-600" />
-                    ) : (
-                      <XCircle className="mt-1 h-5 w-5 flex-shrink-0 text-red-600" />
-                    )}
-                    <div>
-                      <p className="font-medium">{feedback?.correct ? "¡Correcto!" : "Necesitas repasar"}</p>
-                      <p className="text-sm">{feedback?.message}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h3 className="mb-2 text-sm font-medium text-gray-600">Tu respuesta:</h3>
-                  <p className="rounded-lg bg-gray-50 p-3 text-gray-800">{userAnswer}</p>
-                </div>
-
-                <div className="mb-6">
-                  <h3 className="mb-2 text-sm font-medium text-gray-600">Definición correcta:</h3>
-                  <p className="rounded-lg bg-blue-50 p-3 text-gray-800">{currentCard.definition}</p>
-                </div>
-
-                <Button
-                  onClick={nextCard}
-                  className="w-full rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 py-3 font-medium text-white hover:from-blue-600 hover:to-indigo-700"
-                >
-                  {currentCardIndex < mockFlashcards.length - 1 ? "Siguiente flashcard" : "Finalizar práctica"}
-                </Button>
-              </>
-            )}
+            <Textarea
+              value={userAnswer}
+              onChange={handleTextareaChange}
+              placeholder="Escribe tu definición aquí..."
+              className="mb-4 resize-none rounded-lg border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400 min-h-[120px]"
+            />
+            <Button
+              onClick={checkAnswer}
+              disabled={!userAnswer.trim()}
+              className="w-full rounded-lg bg-blue-500 hover:bg-blue-600 py-3 font-medium text-white"
+            >
+              Verificar respuesta
+            </Button>
           </div>
         </div>
       </div>
