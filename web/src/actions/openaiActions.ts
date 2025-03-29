@@ -1,4 +1,3 @@
-
 // src/actions/openaiActions.ts
 "use server";
 
@@ -26,7 +25,6 @@ export async function generateFlashcardsAction(
     return "Open AI request failed";
   }
 }
-
 
 export async function evaluateAnswer(
   correctDefinition: string,
