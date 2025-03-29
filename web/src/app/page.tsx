@@ -9,16 +9,29 @@ import Link from "next/link"
 import { NavBar } from "@/components/nav-bar"
 import { useState } from "react"
 import { PlusCircle, Search, MessageSquare, ImageIcon, FileText, MoreHorizontal, ArrowUp } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useToast } from "@/components/ui/use-toast"
 
 
 function FlashcardForm() {
   const [result, setResult] = useState<string>("");
+  const router = useRouter();
+  const { toast } = useToast();
 
 
   async function handleSubmit(formData: FormData) {
     const userContent = formData.get("userContent") as string;
     const res = await generateFlashcardsAction(userContent);
-    setResult(res);
+    if (res.includes("failed")) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: res,
+      });
+    } else {
+      setResult(res);
+      router.push("/ready");
+    }
   }
 
   return (
@@ -50,14 +63,12 @@ function FlashcardForm() {
             </div>
           </div>
           <div className="flex flex-wrap justify-center gap-3 w-full">
-            <Link href="/ready" className="w-full sm:w-auto">
-              <Button
-                type="submit"
-                className="w-full sm:w-auto rounded-full bg-blue-500 hover:bg-blue-600 px-6 py-2 font-medium text-white"
-              >
-                Generar Flashcards
-              </Button>
-            </Link>
+            <Button
+              type="submit"
+              className="w-full sm:w-auto rounded-full bg-blue-500 hover:bg-blue-600 px-6 py-2 font-medium text-white"
+            >
+              Generar Flashcards
+            </Button>
           </div>
         </form>
       </div>
