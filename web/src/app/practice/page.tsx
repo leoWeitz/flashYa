@@ -208,8 +208,10 @@ export default function PracticePage() {
         </div>
 
         <div className="w-full max-w-xl">
-          {/* Concept Card */}
-          <NameCard concept={currentCard.concept} />
+          <div className="w-full h-48 flex justify-center items-center mb-6">
+            <NameCard concept={currentCard.concept} />
+          </div>
+
 
           {/* Answer Section */}
           <div className="rounded-xl bg-white p-6 shadow-md border border-slate-100">
