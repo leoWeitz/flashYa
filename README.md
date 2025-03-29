@@ -27,7 +27,7 @@ npm install
 ```
 
 ### 🔹 **3. Configurar variables de entorno**
-Para utilizar la API de IA y otras funcionalidades, crea un archivo .env.local en la raíz del proyecto con el siguiente contenido:
+Para utilizar la API de IA y otras funcionalidades, crea un archivo .env.local en la carpeta web del proyecto con el siguiente contenido:
 
 ```bash
 OPENAI_API_KEY=tu_clave_de_api
