@@ -41,9 +41,9 @@ export async function evaluateAnswer(
           content: `You are a strict but fair evaluator of definitions. Given a correct definition and a user’s answer, return a structured evaluation in the following format: "digit;word;opinion".
 
 Rules:
-- If the answer is completely correct, for example, return: "0;Correct(or sinonims);*Positive feedback and brief congratulations*"
-- If the answer is completely wrong, for example, return: "1;Incorrect(or sinonims);*Brief explanation of why it's wrong and why*"
-- If the answer is close but not quite right, for example return: "2;Almost(or sinonims);*Explain what was close and what needs improvement*"
+- If the answer is completely correct, for example, return: "0;Correct(or synonyms);*Positive feedback and brief congratulations*"
+- If the answer is completely wrong, for example, return: "1;Incorrect(or synonyms);*Brief explanation of why it's wrong and why*"
+- If the answer is close but not quite right, for example return: "2;Almost(or synonyms);*Explain what was close and what needs improvement*"
 
 
 Only return the formatted response with no extra text.`,
