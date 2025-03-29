@@ -9,11 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^4.3.0",
     "class-variance-authority": "^0.7.1",
     "framer-motion": "^12.6.2",
     "lucide-react": "^0.485.0",
     "next": "15.2.4",
     "node": "^18.20.8",
+    "pdfjs-dist": "^3.11.174",
     "radix-ui": "^1.1.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -25,6 +27,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-pdf": "^7.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "tailwindcss": "^4",
