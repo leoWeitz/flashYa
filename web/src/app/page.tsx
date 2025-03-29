@@ -1,73 +1,52 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import Link from "next/link"
-import { NavBar } from "@/components/nav-bar"
-import { useState } from "react"
+// app/page.tsx
+import { generateFlashcardsAction } from "@/actions/openaiActions";
+import { useState } from "react";
 
-export default function Home() {
-  const [content, setContent] = useState("")
+function FlashcardForm() {
+  const [result, setResult] = useState<string>("");
+
+  async function handleSubmit(formData: FormData) {
+    const userContent = formData.get("userContent") as string;
+    const res = await generateFlashcardsAction(userContent);
+    setResult(res);
+  }
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-white to-gray-50">
-      <NavBar />
+    <>
+      <form action={handleSubmit}>
+        <textarea
+          name="userContent"
+          placeholder="Pega tu texto o apuntes aquí..."
+          className="p-3 border border-gray-300 rounded-md w-full max-w-md h-32 mb-4"
+        />
+        <button
+          type="submit"
+          className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-full"
+        >
+          Generar Flashcards
+        </button>
+      </form>
 
-      {/* Background wave patterns */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-20 top-0 h-full w-1/2 opacity-20">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute left-0 top-0 h-full w-full transform rounded-br-[70%] rounded-tr-[30%]"
-              style={{
-                backgroundColor: `#${i % 2 === 0 ? "d7d7d7" : "c0c0c0"}`,
-                left: `${i * 40}px`,
-                opacity: 0.7 - i * 0.1,
-              }}
-            />
-          ))}
+      {result && (
+        <div className="mt-8 p-4 bg-gray-100 rounded shadow">
+          <h3 className="text-lg font-medium mb-2">Respuesta del OpenAI:</h3>
+          <pre className="whitespace-pre-wrap text-gray-800">{result}</pre>
         </div>
-        <div className="absolute right-0 top-0 h-full w-1/2 opacity-20">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute right-0 top-0 h-full w-full transform rounded-bl-[70%] rounded-tl-[30%]"
-              style={{
-                backgroundColor: `#${i % 2 === 0 ? "d7d7d7" : "c0c0c0"}`,
-                right: `${i * 40}px`,
-                opacity: 0.7 - i * 0.1,
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pt-20">
-        <div className="mb-8 text-center">
-          <p className="text-xl text-gray-700">Crea flashcards fácilmente de cualquier tema para estudiar mejor</p>
-        </div>
-
-        <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-lg">
-          <h2 className="mb-3 text-lg font-medium text-gray-800">Ingresa tu contenido a practicar/evaluar aquí:</h2>
-          <Textarea
-            placeholder="Pega tu texto, apuntes o contenido que quieres convertir en flashcards..."
-            className="mb-4 min-h-[100px] resize-none rounded-lg border-gray-200 bg-gray-50 text-gray-800 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-300"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            style={{ height: Math.max(100, Math.min(300, content.split("\n").length * 24 + 50)) + "px" }}
-          />
-          <div className="flex justify-end">
-            <Link href="/ready">
-              <Button className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 font-medium text-white hover:from-blue-600 hover:to-indigo-700">
-                Generar Flashcards
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </main>
-  )
+      )}
+    </>
+  );
 }
 
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex flex-col items-center justify-center p-4">
+      <h1 className="text-5xl font-bold mb-4">FlashYa</h1>
+      <p className="text-xl text-gray-700 mb-8">
+        Ingresa el contenido a evaluar
+      </p>
+      <FlashcardForm />
+    </main>
+  );
+}
