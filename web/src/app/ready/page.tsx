@@ -24,6 +24,11 @@ export default function ReadyPage() {
                 ¡Estoy listo!
               </Button>
             </Link>
+            <Link href="/view">
+              <Button className="rounded-full bg-blue-500 hover:bg-blue-600 px-8 py-3 font-medium text-white">
+                ¡Quiero ver mis flashcards!
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

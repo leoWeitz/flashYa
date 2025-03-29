@@ -1,5 +1,6 @@
 import type React from "react"
-import "@/app/globals.css"
+import "./globals.css"
+import "./view/flashcards.css"
 import { Inter } from "next/font/google"
 import { Toaster } from "@/components/ui/toaster"
 
