@@ -9,7 +9,7 @@ interface nameCardProps {
   description?: string
 }
 
-export function ConceptCard({ concept, description }: nameCardProps) {
+export function NameCard({ concept, description }: nameCardProps) {
   const [isHovered, setIsHovered] = useState(false)
 
   return (

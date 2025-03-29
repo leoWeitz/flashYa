@@ -1,7 +1,7 @@
-import { ConceptCard } from "@/components/ui/nameCard";
+import { NameCard } from "@/components/ui/nameCard";
 
 export default function TestPage() {
     return <div>
-        <ConceptCard concept="Pipshas" />
+        <NameCard concept="Pipshas" />
     </div>;
 }
