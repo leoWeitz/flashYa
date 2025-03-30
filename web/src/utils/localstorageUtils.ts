@@ -50,3 +50,13 @@ export function removeFlashcard(index: number): void {
     console.log("Removed" + index + "from local storage");
     console.log(flashcards)
 }
+
+export function getFlashcards(): Flashcard[] {
+    const storedData = localStorage.getItem("flashcards");
+    if (!storedData) {
+        console.error("No hay flashcards almacenadas.");
+        return [];
+
+    }
+    return JSON.parse(storedData);
+}

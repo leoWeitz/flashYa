@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { NavBar } from "@/components/nav-bar";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   PlusCircle,
   Search,
@@ -15,30 +15,149 @@ import {
   FileText,
   MoreHorizontal,
   ArrowUp,
+  Paperclip,
+  X,
+  FileText as PdfIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Flashcard } from "@/utils/localstorageUtils";
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Set up PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 function FlashcardForm() {
   const [result, setResult] = useState<string>("");
+  const [isDragging, setIsDragging] = useState(false);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [parsedContent, setParsedContent] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [textContent, setTextContent] = useState<string>("");
   const router = useRouter();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  async function handleSubmit(formData: FormData) {
-    const userContent = formData.get("userContent") as string;
-    const res = await generateFlashcardsAction(userContent);
-    if (res.includes("failed")) {
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0].type === 'application/pdf') {
+      setPdfFile(files[0]);
+      const url = URL.createObjectURL(files[0]);
+      setPdfUrl(url);
+    } else {
       toast({
         variant: "destructive",
         title: "Error",
-        description: res,
+        description: "Por favor, suelta un archivo PDF.",
       });
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0 && files[0].type === 'application/pdf') {
+      setPdfFile(files[0]);
+      const url = URL.createObjectURL(files[0]);
+      setPdfUrl(url);
     } else {
-      setResult(res);
-      const flashcards: Flashcard[] = JSON.parse(res);
-      localStorage.setItem("flashcards", JSON.stringify(flashcards));
-      router.push("/ready");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Por favor, selecciona un archivo PDF.",
+      });
+    }
+  };
+
+  const handleRemovePdf = () => {
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl);
+    }
+    setPdfFile(null);
+    setPdfUrl(null);
+    setParsedContent("");
+  };
+
+  const parsePdfContent = async (file: File): Promise<string> => {
+    try {
+      setIsLoading(true);
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = "";
+      
+      // Extract text from each page
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(' ');
+        fullText += pageText + '\n';
+      }
+      
+      if (!fullText.trim()) {
+        throw new Error('No text content found in PDF');
+      }
+      
+      return fullText.trim();
+    } catch (error) {
+      console.error('Error parsing PDF:', error);
+      throw new Error('Failed to parse PDF content');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  async function handleSubmit(formData: FormData) {
+    try {
+      let finalContent = "";
+      
+      if (pdfFile) {
+        // If we have a PDF, parse its content
+        finalContent = await parsePdfContent(pdfFile);
+        setParsedContent(finalContent);
+      } else {
+        // If we have text, use it directly
+        finalContent = formData.get("userContent") as string;
+      }
+
+      if (!finalContent.trim()) {
+        throw new Error('No content to generate flashcards from');
+      }
+
+      const res = await generateFlashcardsAction(finalContent);
+      if (res.includes("failed")) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: res,
+        });
+      } else {
+        setResult(res);
+        const flashcards: Flashcard[] = JSON.parse(res);
+        localStorage.setItem("flashcards", JSON.stringify(flashcards));
+        router.push("/ready");
+      }
+    } catch (error) {
+      console.error('Error generating flashcards:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Failed to generate flashcards',
+      });
     }
   }
 
@@ -56,12 +175,68 @@ function FlashcardForm() {
         </div>
         <form action={handleSubmit} className="w-full max-w-2xl">
           <div className="w-full mb-6">
-            <div className="relative w-full">
-              <Textarea
-                name="userContent"
-                placeholder="Pega tu texto o apuntes aquí..."
-                className="w-full min-h-[120px] resize-none rounded-xl border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400 shadow-sm pr-10 pl-4 py-4"
-              />
+            <div 
+              className={`relative rounded-xl border-2 border-dashed transition-colors ${
+                isDragging 
+                  ? 'border-blue-400 bg-blue-50' 
+                  : 'border-slate-200 bg-white'
+              }`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              {pdfFile ? (
+                <div className="min-h-[120px] p-4">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
+                    <div className="flex-shrink-0 p-2 rounded-lg bg-red-50">
+                      <PdfIcon className="h-6 w-6 text-red-500" />
+                    </div>
+                    <div className="flex-grow min-w-0">
+                      <p className="text-sm font-medium text-slate-900 truncate">
+                        {pdfFile.name}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {(pdfFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 rounded-full hover:bg-slate-200"
+                      onClick={handleRemovePdf}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <Textarea
+                    name="userContent"
+                    placeholder="Pega tu texto o apuntes aquí... O arrastra un archivo PDF aquí"
+                    className="w-full min-h-[120px] resize-none rounded-xl border-none bg-transparent text-slate-800 placeholder:text-slate-400 focus:ring-0 shadow-sm pr-10 pl-4 py-4"
+                    value={textContent}
+                    onChange={(e) => setTextContent(e.target.value)}
+                  />
+                  <div className="absolute right-3 bottom-3">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept=".pdf"
+                      onChange={handleFileSelect}
+                    />
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 rounded-full hover:bg-slate-100"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Paperclip className="h-5 w-5 text-slate-400" />
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
           <div className="flex items-center justify-between mt-2 px-1">
@@ -79,8 +254,9 @@ function FlashcardForm() {
             <Button
               type="submit"
               className="w-full sm:w-auto rounded-full bg-blue-500 hover:bg-blue-600 px-6 py-2 font-medium text-white"
+              disabled={(!pdfFile && !textContent.trim()) || isLoading}
             >
-              Generar Flashcards
+              {isLoading ? 'Procesando...' : 'Generar Flashcards'}
             </Button>
           </div>
         </form>

@@ -1,5 +1,6 @@
 "use client";
 
+import "regenerator-runtime/runtime";
 import type React from "react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";

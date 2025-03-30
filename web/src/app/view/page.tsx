@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils"
 import { ArrowLeft, RotateCw } from "lucide-react"
 import { NavBar } from "@/components/nav-bar"
 import { useToast } from "@/components/ui/use-toast"
-
+import { getFlashcards } from "@/utils/localstorageUtils"
 // Datos de ejemplo - después los reemplazaremos con datos reales
-const mockFlashcards = [
+/*const mockFlashcards = [
   {
     id: 1,
     title: "¿Qué es React?",
@@ -41,14 +41,15 @@ const mockFlashcards = [
     content:
       "Una API es un conjunto de reglas y protocolos que permiten que diferentes programas se comuniquen entre sí.",
   },
-]
+]*/
+const mockFlashcards = getFlashcards();
 
 export default function ViewPage() {
-  const [flippedCards, setFlippedCards] = useState<number[]>([])
-  const [animatingCards, setAnimatingCards] = useState<number[]>([])
+  const [flippedCards, setFlippedCards] = useState<string[]>([])
+  const [animatingCards, setAnimatingCards] = useState<string[]>([])
   const { toast } = useToast()
 
-  const toggleCard = (id: number) => {
+  const toggleCard = (id: string) => {
     // Si la tarjeta ya está en animación, no hacer nada
     if (animatingCards.includes(id)) return
 
@@ -85,14 +86,14 @@ export default function ViewPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {mockFlashcards.map((flashcard) => (
               <div
-                key={flashcard.id}
+                key={flashcard.concept}
                 className="group perspective h-72 sm:h-80"
-                onClick={() => toggleCard(flashcard.id)}
+                onClick={() => toggleCard(flashcard.concept)}
               >
                 <div
                   className={cn(
                     "relative h-full w-full transition-all duration-700 transform-style-3d cursor-pointer",
-                    flippedCards.includes(flashcard.id) && "rotate-y-180",
+                    flippedCards.includes(flashcard.concept) && "rotate-y-180",
                   )}
                 >
                   {/* Frente de la tarjeta */}
@@ -102,7 +103,7 @@ export default function ViewPage() {
                         <RotateCw className="h-5 w-5" />
                       </div>
                       <div className="w-12 h-1 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full mb-6"></div>
-                      <h3 className="text-2xl font-bold text-slate-800 text-center">{flashcard.title}</h3>
+                      <h3 className="text-2xl font-bold text-slate-800 text-center">{flashcard.concept}</h3>
                       <div className="mt-6 text-sm text-blue-500 font-medium flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <span>Clic para ver respuesta</span>
                       </div>
@@ -113,16 +114,16 @@ export default function ViewPage() {
                   <div className="absolute inset-0 backface-hidden rotate-y-180">
                     <Card className="h-full w-full flex flex-col p-8 bg-gradient-to-br from-blue-500 to-indigo-600 border-0 shadow-[0_10px_40px_-15px_rgba(59,130,246,0.2)] hover:shadow-[0_20px_50px_-15px_rgba(59,130,246,0.25)] transition-all duration-300">
                       <h3 className="text-sm font-medium text-white/90 text-center mb-4 pb-3 border-b border-white/10">
-                        {flashcard.title}
+                        {flashcard.concept}
                       </h3>
                       <div className="flex-1 flex items-center justify-center overflow-auto">
-                        <p className="text-white text-center text-lg leading-relaxed">{flashcard.content}</p>
+                        <p className="text-white text-center text-lg leading-relaxed">{flashcard.definition}</p>
                       </div>
                       <button
                         className="flex items-center justify-center text-white/80 mt-4 py-2 px-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors group/btn"
                         onClick={(e) => {
                           e.stopPropagation()
-                          toggleCard(flashcard.id)
+                          toggleCard(flashcard.concept)
                         }}
                       >
                         <ArrowLeft className="h-4 w-4 mr-2 transition-transform group-hover/btn:-translate-x-1" />
