@@ -285,7 +285,7 @@ export default function PracticePage() {
         <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pt-16">
           <div className="w-full max-w-xl">
             {/* User Answer */}
-            <div className="mb-6 rounded-xl bg-white p-6 shadow-md border border-slate-100">
+            <div className="mb-3 rounded-xl bg-white p-6 shadow-md border border-slate-100">
               <h2 className="mb-2 text-lg font-medium text-slate-500">
                 Mi respuesta:
               </h2>
@@ -295,7 +295,7 @@ export default function PracticePage() {
             </div>
 
             {/* Feedback Icon */}
-            <div className="mb-6 flex flex-col items-center justify-center py-8">
+            <div className="mb-3 flex flex-col items-center justify-center py-2">
               <div
                 className={`flex h-24 w-24 items-center justify-center rounded-full ${
                   feedback?.correct === 0
