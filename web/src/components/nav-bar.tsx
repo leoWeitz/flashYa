@@ -37,14 +37,17 @@
 //   )
 // }
 
-import Link from "next/link";
+"use client"
 import { FlashyaLogo } from "./flashya-logo";
-
+import { resetLocalStorage } from "@/utils/localstorageUtils";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 interface NavBarProps {
   compact?: boolean;
 }
 
 export function NavBar({ compact = false }: NavBarProps) {
+  const router = useRouter();
   return (
     <header
       className={`fixed left-0 right-0 top-0 z-50 bg-white/80 backdrop-blur-sm shadow-sm ${
@@ -52,9 +55,12 @@ export function NavBar({ compact = false }: NavBarProps) {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center">
+        <Button variant="ghost" onClick={() => {resetLocalStorage();
+          router.push("/");
+        }}>
           <FlashyaLogo className={compact ? "h-8 w-auto" : "h-10 w-auto"} />
-        </Link>
+        </Button>
+       
       </div>
     </header>
   );

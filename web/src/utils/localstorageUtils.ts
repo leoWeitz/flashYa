@@ -164,3 +164,8 @@ export function getRigorousness(): rigss {
     }
   return rigorousness as rigss;
 }
+
+export function resetLocalStorage(): void {
+    localStorage.setItem('flashcards', JSON.stringify([]));
+    localStorage.setItem('discardedFlashcards', JSON.stringify([]));
+}
