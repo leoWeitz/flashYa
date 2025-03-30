@@ -1,7 +1,7 @@
 # 🚀 FlashYa - WebApp de Aprendizaje con IA 📚  
 
 FlashYa es una plataforma que utiliza **inteligencia artificial** para generar **flashcards interactivas** a partir de archivos **PDF**, ayudando a reforzar el aprendizaje de manera eficiente.
-FlashYa está hosteada y ya lo pedes utilar en: https://flash-ya.vercel.app/
+FlashYa está hosteada y ya la podes utilar ingresando en: https://flash-ya.vercel.app/
 
 ---
 
