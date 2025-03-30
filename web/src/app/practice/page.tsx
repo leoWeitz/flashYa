@@ -6,7 +6,13 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { NavBar } from "@/components/nav-bar";
-import { CheckCircle, XCircle, ArrowRight, Loader2 } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  ArrowRight,
+  Loader2,
+  MinusCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { NameCard } from "@/components/ui/nameCard";
 import SpeechRecognition, {
@@ -35,7 +41,7 @@ export default function PracticePage() {
   } | null>(null);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState<null | {
-    correct: boolean;
+    correct: number;
     status: string;
     message: string;
   }>(null);
@@ -134,13 +140,13 @@ export default function PracticePage() {
       const [score, status, message] = evaluation.split(";");
 
       setFeedback({
-        correct: score === "0",
+        correct: score === "0" ? 0 : score === "1" ? 1 : 2,
         status: status,
         message: message,
       });
     } catch (error) {
       setFeedback({
-        correct: false,
+        correct: 0,
         status: "Error",
         message:
           "Hubo un error al evaluar tu respuesta. Por favor, intenta de nuevo.",
@@ -152,7 +158,7 @@ export default function PracticePage() {
   };
 
   const nextCard = async () => {
-    if (feedback?.correct) {
+    if (feedback?.correct === 0) {
       removeFlashcard(currentCard!.index);
     }
     const newCard = await getRandomFlashcard();
@@ -255,13 +261,19 @@ export default function PracticePage() {
             <div className="mb-6 flex flex-col items-center justify-center py-8">
               <div
                 className={`flex h-24 w-24 items-center justify-center rounded-full ${
-                  feedback?.correct ? "bg-green-100" : "bg-red-100"
+                  feedback?.correct === 0
+                    ? "bg-green-100"
+                    : feedback?.correct === 1
+                    ? "bg-red-100"
+                    : "bg-orange-100"
                 }`}
               >
-                {feedback?.correct ? (
+                {feedback?.correct === 0 ? (
                   <CheckCircle className="h-12 w-12 text-green-500" />
-                ) : (
+                ) : feedback?.correct === 1 ? (
                   <XCircle className="h-12 w-12 text-red-500" />
+                ) : (
+                  <MinusCircle className="h-12 w-12 text-orange-500" />
                 )}
               </div>
             </div>
