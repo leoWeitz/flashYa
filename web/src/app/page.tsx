@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { setRigorousness, type Flashcard } from "@/utils/localstorageUtils";
+import { setRigorousness, type Flashcard, initializeTest } from "@/utils/localstorageUtils";
 import * as pdfjsLib from "pdfjs-dist";
 
 enum rigss {
@@ -175,7 +175,7 @@ function FlashcardForm() {
       } else {
         setResult(res);
         const flashcards: Flashcard[] = JSON.parse(res);
-        localStorage.setItem("flashcards", JSON.stringify(flashcards));
+        initializeTest(flashcards);
         router.push("/ready");
       }
     } catch (error) {

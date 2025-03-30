@@ -26,6 +26,7 @@ import {
   removeFlashcard,
   getRandomFlashcard,
   getRigorousness,
+  restartFlashcards,
 } from "@/utils/localstorageUtils";
 
 enum rigorousness {
@@ -158,6 +159,26 @@ export default function PracticePage() {
     }
   };
 
+  const isFirstRender2 = useRef(true);
+  const [restartPractice, setRestartPractice] = useState(false);
+
+
+
+
+ useEffect(() => {
+  console.log(isFirstRender2.current);
+  if (isFirstRender2.current) {
+    isFirstRender2.current = false; // La primera vez se salta el efecto
+    return;
+  }
+  if (restartPractice) {
+   restartFlashcards();
+  setRestartPractice(false);
+  window.location.reload();
+  }
+}, [restartPractice]);
+
+
   const nextCard = async () => {
     if (feedback?.correct === 0) {
       removeFlashcard(currentCard!.index);
@@ -224,6 +245,7 @@ export default function PracticePage() {
                     setFeedback(null);
                     setShowingReview(false);
                     setCompleted(false);
+                    setRestartPractice(true);
                   }}
                   className="rounded-full border-2 border-blue-500 bg-transparent px-6 py-3 font-medium text-blue-500 hover:bg-blue-50"
                 >
