@@ -7,14 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { NavBar } from "@/components/nav-bar";
 import { useState, useRef } from "react";
-import { PlusCircle, Loader2   Paperclip,
+import {
+  PlusCircle,
+  Loader2,
+  Paperclip,
   X,
-  FileText as PdfIcon,
+  FileImageIcon as PdfIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import type { Flashcard } from "@/utils/localstorageUtils";
-import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfjsLib from "pdfjs-dist";
 
 // Set up PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -27,38 +30,8 @@ function FlashcardForm() {
   const [parsedContent, setParsedContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [textContent, setTextContent] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const { toast } = useToast();
-
-  async function handleSubmit(formData: FormData) {
-    setIsLoading(true);
-    const userContent = formData.get("userContent") as string;
-
-    try {
-      const res = await generateFlashcardsAction(userContent);
-      if (res.includes("failed")) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: res,
-        });
-      } else {
-        setResult(res);
-        const flashcards: Flashcard[] = JSON.parse(res);
-        localStorage.setItem("flashcards", JSON.stringify(flashcards));
-        router.push("/ready");
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Algo salió mal. Por favor intenta de nuevo.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   // Handle Enter key press in textarea
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -86,9 +59,9 @@ function FlashcardForm() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const files = e.dataTransfer.files;
-    if (files.length > 0 && files[0].type === 'application/pdf') {
+    if (files.length > 0 && files[0].type === "application/pdf") {
       setPdfFile(files[0]);
       const url = URL.createObjectURL(files[0]);
       setPdfUrl(url);
@@ -103,7 +76,7 @@ function FlashcardForm() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && files.length > 0 && files[0].type === 'application/pdf') {
+    if (files && files.length > 0 && files[0].type === "application/pdf") {
       setPdfFile(files[0]);
       const url = URL.createObjectURL(files[0]);
       setPdfUrl(url);
@@ -127,38 +100,36 @@ function FlashcardForm() {
 
   const parsePdfContent = async (file: File): Promise<string> => {
     try {
-      setIsLoading(true);
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       let fullText = "";
-      
+
       // Extract text from each page
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items
           .map((item: any) => item.str)
-          .join(' ');
-        fullText += pageText + '\n';
+          .join(" ");
+        fullText += pageText + "\n";
       }
-      
+
       if (!fullText.trim()) {
-        throw new Error('No text content found in PDF');
+        throw new Error("No text content found in PDF");
       }
-      
+
       return fullText.trim();
     } catch (error) {
-      console.error('Error parsing PDF:', error);
-      throw new Error('Failed to parse PDF content');
-    } finally {
-      setIsLoading(false);
+      console.error("Error parsing PDF:", error);
+      throw new Error("Failed to parse PDF content");
     }
   };
 
   async function handleSubmit(formData: FormData) {
+    setIsLoading(true);
     try {
       let finalContent = "";
-      
+
       if (pdfFile) {
         // If we have a PDF, parse its content
         finalContent = await parsePdfContent(pdfFile);
@@ -169,7 +140,7 @@ function FlashcardForm() {
       }
 
       if (!finalContent.trim()) {
-        throw new Error('No content to generate flashcards from');
+        throw new Error("No content to generate flashcards from");
       }
 
       const res = await generateFlashcardsAction(finalContent);
@@ -186,12 +157,17 @@ function FlashcardForm() {
         router.push("/ready");
       }
     } catch (error) {
-      console.error('Error generating flashcards:', error);
+      console.error("Error generating flashcards:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to generate flashcards',
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to generate flashcards",
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -209,11 +185,11 @@ function FlashcardForm() {
         </div>
         <form action={handleSubmit} className="w-full max-w-2xl">
           <div className="w-full mb-6">
-            <div 
+            <div
               className={`relative rounded-xl border-2 border-dashed transition-colors ${
-                isDragging 
-                  ? 'border-blue-400 bg-blue-50' 
-                  : 'border-slate-200 bg-white'
+                isDragging
+                  ? "border-blue-400 bg-blue-50"
+                  : "border-slate-200 bg-white"
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
@@ -251,6 +227,7 @@ function FlashcardForm() {
                     className="w-full min-h-[120px] resize-none rounded-xl border-none bg-transparent text-slate-800 placeholder:text-slate-400 focus:ring-0 shadow-sm pr-10 pl-4 py-4"
                     value={textContent}
                     onChange={(e) => setTextContent(e.target.value)}
+                    onKeyDown={handleKeyDown}
                   />
                   <div className="absolute right-3 bottom-3">
                     <input
