@@ -42,6 +42,7 @@ function FlashcardForm() {
   const [isGenerateSelected, setIsGenerateSelected] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const formRef = useRef<HTMLFormElement>(null);
 
   // Handle Enter key press in textarea
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -196,6 +197,15 @@ function FlashcardForm() {
     setIsGenerateSelected(!isGenerateSelected);
   };
 
+  // Handle button click submission
+  const handleButtonSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (formRef.current) {
+      const formData = new FormData(formRef.current);
+      handleSubmit(formData);
+    }
+  };
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-blue-50 to-slate-50">
       <NavBar />
@@ -208,7 +218,7 @@ function FlashcardForm() {
             Crea flashcards fácilmente de cualquier tema para estudiar mejor
           </p>
         </div>
-        <form action={handleSubmit} className="w-full max-w-2xl">
+        <form ref={formRef} className="w-full max-w-2xl">
           <div className="w-full mb-2">
             <div
               className={`relative rounded-xl border-2 border-dashed transition-colors ${
@@ -283,11 +293,12 @@ function FlashcardForm() {
             {/* Left side button */}
             <div className="flex items-center">
               <Button
+                type="button"
                 variant="ghost"
                 onClick={toggleButton}
                 className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
                   isGenerateSelected
-                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-blue-100 text-blue-700 hover:bg-blue-300"
                     : "text-slate-600 hover:bg-slate-100 hover:text-slate-700"
                 }`}
               >
@@ -352,7 +363,8 @@ function FlashcardForm() {
 
           <div className="flex flex-wrap justify-center gap-3 w-full">
             <Button
-              type="submit"
+              type="button"
+              onClick={handleButtonSubmit}
               className="w-full sm:w-auto rounded-full bg-blue-500 hover:bg-blue-600 px-6 py-2 font-medium text-white"
               disabled={(!pdfFile && !textContent.trim()) || isLoading}
             >
