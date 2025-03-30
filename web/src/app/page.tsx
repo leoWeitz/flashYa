@@ -210,6 +210,7 @@ function FlashcardForm() {
                       </p>
                     </div>
                     <Button
+                      type="button"
                       size="icon"
                       variant="ghost"
                       className="h-8 w-8 rounded-full hover:bg-slate-200"
@@ -238,6 +239,7 @@ function FlashcardForm() {
                       onChange={handleFileSelect}
                     />
                     <Button
+                      type="button"
                       size="icon"
                       variant="ghost"
                       className="h-8 w-8 rounded-full hover:bg-slate-100"
@@ -250,17 +252,7 @@ function FlashcardForm() {
               )}
             </div>
           </div>
-          <div className="flex items-center justify-between mt-2 px-1">
-            <div className="flex items-center gap-2">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="rounded-full h-8 w-8 text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-              >
-                <PlusCircle className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          
           <div className="flex flex-wrap justify-center gap-3 w-full">
             <Button
               type="submit"
