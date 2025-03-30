@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Loader2,
   MinusCircle,
+  Mic,
 } from "lucide-react";
 import Link from "next/link";
 import { NameCard } from "@/components/ui/nameCard";
@@ -331,9 +332,29 @@ export default function PracticePage() {
 
           {/* Answer Section */}
           <div className="rounded-xl bg-white p-6 shadow-md border border-slate-100">
-            <h2 className="mb-4 text-lg font-medium text-slate-500">
-              Tu definición:
-            </h2>
+            <div className="flex items-center justify-center  p-4">
+              <Button
+                onClick={handleMicClick}
+                className={`flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out
+    ${
+      listening
+        ? "bg-green-500 hover:bg-green-600 w-full  rounded-lg"
+        : "bg-blue-500 w-28 h-28 rounded-full hover:bg-blue-400 hover:scale-105"
+    }
+  `}
+              >
+                <Mic
+                  className={`text-white ${
+                    listening ? "h-16 w-16" : "h-16 w-16"
+                  }`}
+                />
+                {listening && (
+                  <span className="ml-2 text-white text-sm font-medium">
+                    Escuchando...
+                  </span>
+                )}
+              </Button>
+            </div>
 
             <Textarea
               ref={textareaRef}
@@ -341,7 +362,7 @@ export default function PracticePage() {
               onChange={handleTextareaChange}
               onKeyDown={handleKeyDown}
               placeholder="Escribe tu definición aquí..."
-              className="mb-4 resize-none rounded-lg border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400 min-h-[120px]"
+              className="mb-4 resize-none rounded-lg border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400 min-h-[20px]"
             />
             <Button
               onClick={checkAnswer}
