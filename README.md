@@ -32,7 +32,6 @@ Para utilizar la API de IA y otras funcionalidades, crea un archivo .env.local e
 
 ```bash
 OPENAI_API_KEY=tu_clave_de_api
-NEXT_PUBLIC_BACKEND_URL=http://localhost:3001
 ```
 
 ### 🔹 **4. Compilar el proyecto**
@@ -46,4 +45,4 @@ npm run dev
 ```
 
 ### 🔹 **6. Abrir una ventana de un navegador web Chromium-based**
-Por último, ingresar a la URL http://localhost:3000 donde ya podes usar nuestra
+Por último, ingresar a la URL http://localhost:3000 donde ya podes usar nuestra aplicación
