@@ -212,10 +212,10 @@ function FlashcardForm() {
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold mb-2 text-slate-800">
-            ¿Con qué quieres practicar hoy?
+            ¿Que tema quieres practicar hoy?
           </h1>
           <p className="text-slate-500">
-            Crea flashcards fácilmente de cualquier tema para estudiar mejor
+            Crea flashcards fácilmente de cualquier leccion que desees.
           </p>
         </div>
         <form ref={formRef} className="w-full max-w-2xl">
@@ -259,7 +259,7 @@ function FlashcardForm() {
                 <>
                   <Textarea
                     name="userContent"
-                    placeholder="Pega tu texto o apuntes aquí... O arrastra un archivo PDF aquí"
+                    placeholder="Pega un texto/apunte aquí o arrastra un archivo PDF"
                     className="w-full min-h-[120px] resize-none rounded-xl border-none bg-transparent text-slate-800 placeholder:text-slate-400 focus:ring-0 shadow-sm pr-10 pl-4 py-4"
                     value={textContent}
                     onChange={(e) => setTextContent(e.target.value)}
