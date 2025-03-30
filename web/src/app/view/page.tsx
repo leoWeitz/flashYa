@@ -8,41 +8,9 @@ import { NavBar } from "@/components/nav-bar"
 import { useToast } from "@/components/ui/use-toast"
 import { getFlashcards } from "@/utils/localstorageUtils"
 import { Flashcard } from "@/utils/localstorageUtils"
-// Datos de ejemplo - después los reemplazaremos con datos reales
-/*const mockFlashcards = [
-  {
-    id: 1,
-    title: "¿Qué es React?",
-    content: "React es una biblioteca de JavaScript para construir interfaces de usuario.",
-  },
-  {
-    id: 2,
-    title: "¿Qué es Next.js?",
-    content:
-      "Next.js es un framework de React que permite crear aplicaciones web con renderizado del lado del servidor.",
-  },
-  {
-    id: 3,
-    title: "¿Qué es TypeScript?",
-    content: "TypeScript es un superconjunto tipado de JavaScript que compila a JavaScript puro.",
-  },
-  {
-    id: 4,
-    title: "¿Qué es Tailwind CSS?",
-    content: "Tailwind CSS es un framework de CSS utilitario que permite crear diseños rápidamente.",
-  },
-  {
-    id: 5,
-    title: "¿Qué es el DOM?",
-    content: "El DOM es una representación en memoria de la estructura de un documento HTML.",
-  },
-  {
-    id: 6,
-    title: "¿Qué es una API?",
-    content:
-      "Una API es un conjunto de reglas y protocolos que permiten que diferentes programas se comuniquen entre sí.",
-  },
-]*/
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Brain } from "lucide-react"
 
 export default function ViewPage() {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([])
@@ -73,7 +41,6 @@ export default function ViewPage() {
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/50">
-      {/* Patrón de fondo decorativo */}
       <div className="absolute inset-0 z-0 opacity-20">
         <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:20px_20px]"></div>
       </div>
@@ -82,9 +49,19 @@ export default function ViewPage() {
 
       <div className="relative z-10 flex min-h-screen flex-col items-center px-4 pt-24 pb-20">
         <div className="w-full max-w-7xl">
-          <div className="mb-10 text-center">
-            <h1 className="text-4xl font-bold text-slate-800 mb-2 tracking-tight">Tus Flashcards</h1>
-            <p className="text-slate-600 max-w-2xl mx-auto">
+          <div className="mb-10">
+            <div className="relative">
+              <h1 className="text-4xl font-bold text-slate-800 tracking-tight text-center">Tus Flashcards</h1>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                <Link href="/practice">
+                  <Button className="gap-2 bg-blue-500 hover:bg-blue-600 text-white">
+                    <Brain className="h-4 w-4" />
+                    <span>Practicar</span>
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <p className="text-slate-600 max-w-2xl mx-auto text-center mt-2">
               Haz clic en cualquier tarjeta para revelar su contenido. Estudia a tu propio ritmo.
             </p>
           </div>

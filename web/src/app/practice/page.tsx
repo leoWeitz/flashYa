@@ -49,16 +49,17 @@ export default function PracticePage() {
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
 
-    const isFirstRender = useRef(true); // Controla si es el primer render
+  const isFirstRender = useRef(true); // Controla si es el primer render
 
   useEffect(() => {
+    console.log(isFirstRender.current);
     if (isFirstRender.current) {
       isFirstRender.current = false; // La primera vez se salta el efecto
       return;
     }
-
+    if (needToRemoveCard) {
     removeFlashcard(currentCard!.index);
-
+    }
   }, [needToRemoveCard]); // Solo se ejecuta cuando `valor` cambia
 
   useEffect(() => {
@@ -149,8 +150,10 @@ export default function PracticePage() {
   };
 
   const nextCard = async () => {
+    console.log("nextCard");
     if (feedback?.correct) {
-      setNeedToRemoveCard(true);
+      console.log("feedback?.correct");
+      await setNeedToRemoveCard(true);
     }
     const newCard = await getRandomFlashcard();
     if (!newCard) {
