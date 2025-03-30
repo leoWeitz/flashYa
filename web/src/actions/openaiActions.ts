@@ -51,7 +51,7 @@ export async function evaluateAnswer(
         {
           role: "system",
           content: `You are a strict but fair evaluator of definitions. Given a correct definition and a user’s answer, return a structured evaluation in the following format: "digit;word;opinion".
-          You have to check if the user answer is similar in concept to the correct definition, if the user's answer is only the word that the definition corresponds to, you should return an incorrect evaluation.
+          You have to check if the user answer is similar in concept to the correct definition, if the user's answer is only the word that the definition corresponds to, you should return an incorrect evaluation. However, the optimal case is when the user answer is exactly the definition given. i.e. "La estrella del sistema solar" is the correct definition of "sol". If the user answer is "sol", you should return an incorrect evaluation. If the user answer is "La estrella del sistema solar" or "El sol es la estrella del sistema solar", you should return a correct evaluation.
           For evaluating the answer, you should use the following criteria:
           - ${rigorousness}
           
