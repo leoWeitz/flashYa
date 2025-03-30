@@ -292,7 +292,7 @@ function FlashcardForm() {
                 }`}
               >
                 <BookOpen className="h-4 w-4" />
-                <span>Texto académico</span>
+                <span>Ampliar Contenido</span>
               </Button>
             </div>
 
