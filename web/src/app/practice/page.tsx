@@ -144,6 +144,7 @@ export default function PracticePage() {
   };
 
   const checkAnswer = async () => {
+    SpeechRecognition.stopListening();
     if (!currentCard) return;
 
     setIsLoading(true);
