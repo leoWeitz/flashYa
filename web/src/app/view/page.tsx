@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { ArrowLeft, RotateCw } from "lucide-react"
 import { NavBar } from "@/components/nav-bar"
 import { useToast } from "@/components/ui/use-toast"
 import { getFlashcards } from "@/utils/localstorageUtils"
+import { Flashcard } from "@/utils/localstorageUtils"
 // Datos de ejemplo - después los reemplazaremos con datos reales
 /*const mockFlashcards = [
   {
@@ -42,12 +43,17 @@ import { getFlashcards } from "@/utils/localstorageUtils"
       "Una API es un conjunto de reglas y protocolos que permiten que diferentes programas se comuniquen entre sí.",
   },
 ]*/
-const mockFlashcards = getFlashcards();
 
 export default function ViewPage() {
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([])
   const [flippedCards, setFlippedCards] = useState<string[]>([])
   const [animatingCards, setAnimatingCards] = useState<string[]>([])
   const { toast } = useToast()
+
+  useEffect(() => {
+    const loadedFlashcards = getFlashcards()
+    setFlashcards(loadedFlashcards)
+  }, [])
 
   const toggleCard = (id: string) => {
     // Si la tarjeta ya está en animación, no hacer nada
@@ -84,7 +90,7 @@ export default function ViewPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            {mockFlashcards.map((flashcard) => (
+            {flashcards.map((flashcard) => (
               <div
                 key={flashcard.concept}
                 className="group perspective h-72 sm:h-80"

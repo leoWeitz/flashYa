@@ -40,6 +40,7 @@ export default function PracticePage() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingCard, setIsLoadingCard] = useState(true);
+  const [needToRemoveCard, setNeedToRemoveCard] = useState(false);
 
   const {
     transcript,
@@ -47,6 +48,18 @@ export default function PracticePage() {
     resetTranscript,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
+
+    const isFirstRender = useRef(true); // Controla si es el primer render
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false; // La primera vez se salta el efecto
+      return;
+    }
+
+    removeFlashcard(currentCard!.index);
+
+  }, [needToRemoveCard]); // Solo se ejecuta cuando `valor` cambia
 
   useEffect(() => {
     async function loadFlashcard() {
@@ -137,7 +150,7 @@ export default function PracticePage() {
 
   const nextCard = async () => {
     if (feedback?.correct) {
-      removeFlashcard(currentCard!.index);
+      setNeedToRemoveCard(true);
     }
     const newCard = await getRandomFlashcard();
     if (!newCard) {
