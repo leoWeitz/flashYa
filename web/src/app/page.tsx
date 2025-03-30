@@ -170,7 +170,7 @@ function FlashcardForm() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: res,
+          description: "Failed to generate flashcards, please try again",
         });
       } else {
         setResult(res);
@@ -183,10 +183,7 @@ function FlashcardForm() {
       toast({
         variant: "destructive",
         title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to generate flashcards",
+        description: "Failed to generate flashcards, please try again",
       });
     } finally {
       setIsLoading(false);
