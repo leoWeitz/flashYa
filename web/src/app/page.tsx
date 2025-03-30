@@ -1,27 +1,19 @@
 "use client";
 
-// app/page.tsx
+import type React from "react";
+
 import { generateFlashcardsAction } from "@/actions/openaiActions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import Link from "next/link";
 import { NavBar } from "@/components/nav-bar";
 import { useState, useRef } from "react";
-import {
-  PlusCircle,
-  Search,
-  MessageSquare,
-  ImageIcon,
-  FileText,
-  MoreHorizontal,
-  ArrowUp,
-  Paperclip,
+import { PlusCircle, Loader2   Paperclip,
   X,
   FileText as PdfIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { Flashcard } from "@/utils/localstorageUtils";
+import type { Flashcard } from "@/utils/localstorageUtils";
 import * as pdfjsLib from 'pdfjs-dist';
 
 // Set up PDF.js worker
@@ -35,8 +27,50 @@ function FlashcardForm() {
   const [parsedContent, setParsedContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [textContent, setTextContent] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  async function handleSubmit(formData: FormData) {
+    setIsLoading(true);
+    const userContent = formData.get("userContent") as string;
+
+    try {
+      const res = await generateFlashcardsAction(userContent);
+      if (res.includes("failed")) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: res,
+        });
+      } else {
+        setResult(res);
+        const flashcards: Flashcard[] = JSON.parse(res);
+        localStorage.setItem("flashcards", JSON.stringify(flashcards));
+        router.push("/ready");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Algo salió mal. Por favor intenta de nuevo.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // Handle Enter key press in textarea
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      const form = e.currentTarget.form;
+      if (form) {
+        const formData = new FormData(form);
+        handleSubmit(formData);
+      }
+    }
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -256,7 +290,14 @@ function FlashcardForm() {
               className="w-full sm:w-auto rounded-full bg-blue-500 hover:bg-blue-600 px-6 py-2 font-medium text-white"
               disabled={(!pdfFile && !textContent.trim()) || isLoading}
             >
-              {isLoading ? 'Procesando...' : 'Generar Flashcards'}
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  Generando...
+                </div>
+              ) : (
+                "Generar Flashcards"
+              )}
             </Button>
           </div>
         </form>
