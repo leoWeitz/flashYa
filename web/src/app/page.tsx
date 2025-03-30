@@ -8,11 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { NavBar } from "@/components/nav-bar";
 import { useState, useRef } from "react";
 import {
-  PlusCircle,
   Loader2,
   Paperclip,
   X,
   FileImageIcon as PdfIcon,
+  BookOpen,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
@@ -30,6 +30,10 @@ function FlashcardForm() {
   const [parsedContent, setParsedContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [textContent, setTextContent] = useState<string>("");
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
+    "medium"
+  );
+  const [isButtonSelected, setIsButtonSelected] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -143,6 +147,9 @@ function FlashcardForm() {
         throw new Error("No content to generate flashcards from");
       }
 
+      // Add difficulty to the request
+      const difficultyParam = `difficulty=${difficulty}`;
+
       const res = await generateFlashcardsAction(finalContent);
       if (res.includes("failed")) {
         toast({
@@ -171,6 +178,10 @@ function FlashcardForm() {
     }
   }
 
+  const toggleButton = () => {
+    setIsButtonSelected(!isButtonSelected);
+  };
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-blue-50 to-slate-50">
       <NavBar />
@@ -184,7 +195,7 @@ function FlashcardForm() {
           </p>
         </div>
         <form action={handleSubmit} className="w-full max-w-2xl">
-          <div className="w-full mb-6">
+          <div className="w-full mb-2">
             <div
               className={`relative rounded-xl border-2 border-dashed transition-colors ${
                 isDragging
@@ -252,7 +263,79 @@ function FlashcardForm() {
               )}
             </div>
           </div>
-          
+
+          {/* Buttons and difficulty slider row */}
+          <div className="flex items-center justify-between mt-2 mb-4 px-1">
+            {/* Left side button */}
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                onClick={toggleButton}
+                className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                  isButtonSelected
+                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-700"
+                }`}
+              >
+                <BookOpen className="h-4 w-4" />
+                <span>Texto académico</span>
+              </Button>
+            </div>
+
+            {/* Right side difficulty selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-slate-500">
+                Dificultad:
+              </span>
+              <div className="flex items-center bg-white rounded-full p-1 shadow-sm border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setDifficulty("easy")}
+                  className={`relative px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                    difficulty === "easy"
+                      ? "bg-green-100 text-green-700"
+                      : "text-slate-500 hover:bg-slate-100"
+                  }`}
+                >
+                  Fácil
+                  {difficulty === "easy" && (
+                    <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDifficulty("medium")}
+                  className={`relative px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                    difficulty === "medium"
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-slate-500 hover:bg-slate-100"
+                  }`}
+                >
+                  Media
+                  {difficulty === "medium" && (
+                    <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDifficulty("hard")}
+                  className={`relative px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                    difficulty === "hard"
+                      ? "bg-red-100 text-red-700"
+                      : "text-slate-500 hover:bg-slate-100"
+                  }`}
+                >
+                  Difícil
+                  {difficulty === "hard" && (
+                    <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-wrap justify-center gap-3 w-full">
             <Button
               type="submit"
