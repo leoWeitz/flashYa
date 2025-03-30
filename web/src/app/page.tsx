@@ -16,8 +16,14 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import type { Flashcard } from "@/utils/localstorageUtils";
+import { setRigorousness, type Flashcard } from "@/utils/localstorageUtils";
 import * as pdfjsLib from "pdfjs-dist";
+
+enum rigss {
+  MODERATE = "Acepta como correcto si la respuesta capta la idea general, aunque no sea exacta.",
+  PRECISE = "Acepta como correcto si la respuesta incluye los conceptos clave de la definición.",
+  STRICT = "Acepta como correcto solo si la respuesta expresa todos los aspectos con la definición dada.",
+}
 
 // Set up PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -33,7 +39,7 @@ function FlashcardForm() {
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
     "medium"
   );
-  const [isButtonSelected, setIsButtonSelected] = useState(false);
+  const [isGenerateSelected, setIsGenerateSelected] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -147,10 +153,18 @@ function FlashcardForm() {
         throw new Error("No content to generate flashcards from");
       }
 
-      // Add difficulty to the request
-      const difficultyParam = `difficulty=${difficulty}`;
+      setRigorousness(
+        difficulty == "easy"
+          ? rigss.MODERATE
+          : difficulty == "medium"
+          ? rigss.PRECISE
+          : rigss.STRICT
+      );
 
-      const res = await generateFlashcardsAction(finalContent);
+      const res = await generateFlashcardsAction(
+        finalContent,
+        isGenerateSelected ? "can" : "cannot"
+      );
       if (res.includes("failed")) {
         toast({
           variant: "destructive",
@@ -179,7 +193,7 @@ function FlashcardForm() {
   }
 
   const toggleButton = () => {
-    setIsButtonSelected(!isButtonSelected);
+    setIsGenerateSelected(!isGenerateSelected);
   };
 
   return (
@@ -272,7 +286,7 @@ function FlashcardForm() {
                 variant="ghost"
                 onClick={toggleButton}
                 className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
-                  isButtonSelected
+                  isGenerateSelected
                     ? "bg-blue-500 text-white hover:bg-blue-600"
                     : "text-slate-600 hover:bg-slate-100 hover:text-slate-700"
                 }`}

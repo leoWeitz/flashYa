@@ -18,7 +18,14 @@ import {
   type Flashcard,
   removeFlashcard,
   getRandomFlashcard,
+  getRigorousness,
 } from "@/utils/localstorageUtils";
+
+enum rigorousness {
+  MODERATE = "Acepta como correcto si la respuesta capta la idea general, aunque no sea exacta.",
+  PRECISE = "Acepta como correcto si la respuesta incluye los conceptos clave de la definición.",
+  STRICT = "Acepta como correcto solo si la respuesta expresa todos los aspectos con la definición dada.",
+}
 
 export default function PracticePage() {
   const router = useRouter();
@@ -121,7 +128,8 @@ export default function PracticePage() {
     try {
       const evaluation = await evaluateAnswer(
         currentCard.card.definition,
-        userAnswer
+        userAnswer,
+        getRigorousness()
       );
       const [score, status, message] = evaluation.split(";");
 
