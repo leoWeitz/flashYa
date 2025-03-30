@@ -350,70 +350,74 @@ export default function PracticePage() {
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-blue-50 to-slate-50">
+      {/* Background Pattern */}
       <div className="absolute inset-0 z-0 opacity-20">
-        <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:20px_20px]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px]" />
       </div>
+
       <NavBar compact />
 
-      {/* Content */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4">
-        <div className="mb-4 text-center">
-          <p className="text-sm text-slate-500">Flashcard</p>
-        </div>
-
-        <div className="w-full max-w-xl">
-          <div className="w-full h-48 flex justify-center items-center mb-6">
-            <NameCard concept={currentCard!.card.concept} />
+      {/* Main Content */}
+      <div className="relative z-10 container mx-auto px-4 py-12 min-h-screen flex items-center justify-center">
+        <div className="w-full max-w-xl space-y-8">
+          {/* Concept Card */}
+          <div className="transform transition-all duration-300 hover:scale-105">
+            <div className="h-48 flex items-center justify-center">
+              <NameCard concept={currentCard!.card.concept} />
+            </div>
           </div>
 
           {/* Answer Section */}
-          <div className="rounded-xl bg-white p-6 shadow-md border border-slate-100">
-            <div className="flex items-center justify-center  p-4">
-              <Button
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+            {/* Voice Input */}
+            <div className="p-6 flex justify-center">
+              <button
                 onClick={handleMicClick}
-                className={`flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out
-    ${
-      listening
-        ? "bg-green-500 hover:bg-green-600 w-full  rounded-lg"
-        : "bg-blue-500 w-28 h-28 rounded-full hover:bg-blue-400 hover:scale-105"
-    }
-  `}
+                className={`
+                  flex items-center justify-center transition-all duration-300
+                  ${
+                    listening
+                      ? "bg-green-500 hover:bg-green-400 w-full p-4 rounded-xl shadow-green-200 hover:shadow-lg"
+                      : "bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 w-24 h-24 rounded-full shadow-blue-200 hover:shadow-lg hover:scale-105 active:scale-95"
+                  }
+                `}
               >
-                <Mic
-                  className={`text-white ${
-                    listening ? "h-16 w-16" : "h-16 w-16"
-                  }`}
-                />
+                <Mic size={listening ? 20 : 39} className="text-white" />
                 {listening && (
-                  <span className="ml-2 text-white text-sm font-medium">
+                  <span className="ml-2 text-white font-medium">
                     Escuchando...
                   </span>
                 )}
-              </Button>
+              </button>
             </div>
 
-            <Textarea
-              ref={textareaRef}
-              value={userAnswer}
-              onChange={handleTextareaChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Escribe tu definición aquí..."
-              className="mb-4 resize-none rounded-lg border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400 min-h-[20px]"
-            />
-            <Button
-              onClick={checkAnswer}
-              disabled={!userAnswer.trim() || isLoading}
-              className="w-full rounded-lg bg-blue-500 hover:bg-blue-600 py-3 font-medium text-white"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center">
-                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                  Evaluando...
-                </div>
-              ) : (
-                "Verificar respuesta"
-              )}
-            </Button>
+            {/* Text Input */}
+            <div className="px-6 pb-6 space-y-4">
+              <Textarea
+                ref={textareaRef}
+                value={userAnswer}
+                onChange={handleTextareaChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Escribe tu definición aquí..."
+                className="w-full resize-none rounded-xl border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400 min-h-[120px] transition-all duration-200"
+              />
+
+              {/* Submit Button */}
+              <Button
+                onClick={checkAnswer}
+                disabled={!userAnswer.trim() || isLoading}
+                className="w-full rounded-xl bg-blue-500 hover:bg-blue-600 py-4 font-medium text-white transition-colors duration-200"
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>Evaluando...</span>
+                  </div>
+                ) : (
+                  "Verificar respuesta"
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
