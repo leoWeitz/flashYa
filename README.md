@@ -1,6 +1,7 @@
 # 🚀 FlashYa - WebApp de Aprendizaje con IA 📚  
 
-FlashYa es una plataforma que utiliza **inteligencia artificial** para generar **flashcards interactivas** a partir de archivos **PDF**, ayudando a reforzar el aprendizaje de manera eficiente.  
+FlashYa es una plataforma que utiliza **inteligencia artificial** para generar **flashcards interactivas** a partir de archivos **PDF**, ayudando a reforzar el aprendizaje de manera eficiente.
+FlashYa está hosteada y ya lo pedes utilar en: https://flash-ya.vercel.app/
 
 ---
 
@@ -16,7 +17,7 @@ FlashYa es una plataforma que utiliza **inteligencia artificial** para generar *
 ### 🔹 **1. Clonar el repositorio**
 Abre una terminal y ejecuta:  
 ```bash
-git clone <URL_DEL_REPO>
+git clone https://github.com/leoWeitz/flashYa.git
 cd flashYa
 cd web
 ```
@@ -43,3 +44,6 @@ npm run build
 ```bash
 npm run dev
 ```
+
+### 🔹 **6. Abrir una ventana de un navegador web Chromium-based**
+Por último, ingresar a la URL http://localhost:3000 donde ya podes usar nuestra
