@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { NavBar } from "@/components/nav-bar";
-import { CheckCircle, XCircle, ArrowRight, Mic } from "lucide-react";
+import { CheckCircle, XCircle, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { NameCard } from "@/components/ui/nameCard";
 import SpeechRecognition, {
@@ -15,7 +15,7 @@ import SpeechRecognition, {
 import { evaluateAnswer } from "@/actions/openaiActions";
 import { useRouter } from "next/navigation";
 import {
-  Flashcard,
+  type Flashcard,
   removeFlashcard,
   getRandomFlashcard,
 } from "@/utils/localstorageUtils";
@@ -64,6 +64,14 @@ export default function PracticePage() {
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserAnswer(e.target.value);
+  };
+
+  // Handle Enter key press in textarea
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey && userAnswer.trim() && !isLoading) {
+      e.preventDefault();
+      checkAnswer();
+    }
   };
 
   // Actualiza el textarea cuando cambia la transcripción
@@ -168,6 +176,10 @@ export default function PracticePage() {
   if (completed) {
     return (
       <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-blue-50 to-slate-50">
+        <div className="absolute inset-0 z-0 opacity-20">
+          <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:20px_20px]"></div>
+        </div>
+
         <NavBar compact />
 
         {/* Content */}
@@ -213,6 +225,9 @@ export default function PracticePage() {
   if (showingReview) {
     return (
       <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-blue-50 to-slate-50">
+        <div className="absolute inset-0 z-0 opacity-20">
+          <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:20px_20px]"></div>
+        </div>
         <NavBar compact />
 
         {/* Content */}
@@ -278,6 +293,9 @@ export default function PracticePage() {
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-blue-50 to-slate-50">
+      <div className="absolute inset-0 z-0 opacity-20">
+        <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:20px_20px]"></div>
+      </div>
       <NavBar compact />
 
       {/* Content */}
@@ -298,8 +316,10 @@ export default function PracticePage() {
             </h2>
 
             <Textarea
+              ref={textareaRef}
               value={userAnswer}
               onChange={handleTextareaChange}
+              onKeyDown={handleKeyDown}
               placeholder="Escribe tu definición aquí..."
               className="mb-4 resize-none rounded-lg border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400 min-h-[120px]"
             />
@@ -308,7 +328,14 @@ export default function PracticePage() {
               disabled={!userAnswer.trim() || isLoading}
               className="w-full rounded-lg bg-blue-500 hover:bg-blue-600 py-3 font-medium text-white"
             >
-              {isLoading ? "Evaluando..." : "Verificar respuesta"}
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  Evaluando...
+                </div>
+              ) : (
+                "Verificar respuesta"
+              )}
             </Button>
           </div>
         </div>
